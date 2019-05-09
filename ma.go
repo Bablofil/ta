@@ -15,7 +15,6 @@ func SMA(data []float64, period int) (result []float64, err error) {
 
 	if period <= 0 {
 		return result, errors.New("Invalid period")
-
 	}
 
 	var interm float64
