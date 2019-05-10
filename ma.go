@@ -1,4 +1,3 @@
-// ta project ta.go
 package ta
 
 import (
@@ -8,7 +7,6 @@ import (
 
 // Data expected to be older->newer, fair for result as well
 func SMA(data []float64, period int) (result []float64, err error) {
-
 	if len(data) == 0 {
 		return result, errors.New("input parameter 'data' is empty")
 	}
@@ -18,6 +16,7 @@ func SMA(data []float64, period int) (result []float64, err error) {
 	}
 
 	var interm float64
+
 	for i := 0; i < len(data); i++ {
 		interm += data[i]
 		if (i + 1) < period {
@@ -53,4 +52,49 @@ func EMA(data []float64, period int) (result []float64, err error) {
 		}
 	}
 	return result, nil
+}
+
+func MACD(data []float64, fastperiod, slowperiod, signalperiod int) (macd, macdsignal, macdhist []float64, err error) {
+	fast_ema, err := EMA(data, fastperiod)
+	if err != nil {
+		return
+	}
+
+	slow_ema, err := EMA(data, slowperiod)
+	if err != nil {
+		return
+	}
+
+	macd = make([]float64, len(fast_ema))
+	macdsignal = make([]float64, 0)
+	diff := make([]float64, 0)
+
+	for k, fast := range fast_ema {
+		if math.IsNaN(fast) || math.IsNaN(slow_ema[k]) {
+			macd[k] = math.NaN()
+			macdsignal = append(macdsignal, math.NaN())
+		} else {
+			macd[k] = fast - slow_ema[k]
+			diff = append(diff, macd[k])
+		}
+	}
+
+	diff_ema, err := EMA(diff, signalperiod)
+
+	if err != nil {
+		return
+	}
+	macdsignal = append(macdsignal, diff_ema...)
+
+	macdhist = make([]float64, len(macd))
+
+	for k, ms := range macdsignal {
+		if math.IsNaN(ms) || math.IsNaN(macd[k]) {
+			macdhist[k] = math.NaN()
+		} else {
+			macdhist[k] = macd[k] - macdsignal[k]
+		}
+	}
+
+	return
 }

@@ -27,10 +27,16 @@ func main() {
 	
 	// run EMA with period 2
 	fmt.Println(ta.EMA(closes, 10))
+	
+	// MACD fast=12, slow=26, smoothing=9
+	macd, macdsignal, macdhist, err := ta.MACD(test.Input, 12, 26, 9)
+	if err != nil {
+		fmt.Errorf(err.Error())
+	}
+	fmt.Println("macd", macd)
+	fmt.Println("macdsignal", macdsignal)
+	fmt.Println("macdhist", macdhist)
+
 }
 ```
 
-` [NaN 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 5.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 5.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5] <nil>`
-
-
-` [NaN NaN NaN NaN NaN NaN NaN NaN NaN 5.5 4.681818181818182 4.194214876033057 3.9770848985725014 3.9812512806502283 4.166478320532005 4.499845898617095 4.954419371595805 5.508161304032932 6.143041066936035 6.844306327493119 5.781705177039825 5.094122417578038 4.713372887109304 4.583668725816703 4.659365321122757 4.903117080918619 5.284368520751598 5.778119698796762 6.363916117197351 7.025022277706924] <nil>`
