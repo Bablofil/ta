@@ -28,7 +28,7 @@ func main() {
 	// run SMA with period 1
 	fmt.Println(ta.SMA(closes, 1))
 
-	// run EMA with period 2
+	// run EMA with period 10
 	fmt.Println(ta.EMA(closes, 10))
 
 	// MACD fast=12, slow=26, smoothing=9
