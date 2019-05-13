@@ -1,23 +1,17 @@
-package ta
+package tests
 
 import (
 	"math"
 	"testing"
+
+	"../../ta"
 )
-
-type testItem struct {
-	Input    []float64
-	Expected []float64
-	Period   int
-}
-
-type ma_func func([]float64, int) ([]float64, error)
 
 func TestEmptyData(t *testing.T) {
 	var data []float64 = make([]float64, 0)
 	var period int = 0
 
-	res, err := SMA(data, period)
+	res, err := ta.SMA(data, period)
 	if err != nil {
 		if err.Error() != "input parameter 'data' is empty" {
 			t.Errorf("Unexpected error %s", err.Error())
@@ -34,7 +28,7 @@ func TestZeroPeriod(t *testing.T) {
 	}
 	var period int = 0
 
-	res, err := SMA(data, period)
+	res, err := ta.SMA(data, period)
 	if err != nil {
 		if err.Error() != "Invalid period" {
 			t.Errorf("Unexpected error %s", err.Error())
@@ -50,7 +44,7 @@ func TestNegativePeriod(t *testing.T) {
 	}
 	var period int = -1
 
-	res, err := SMA(data, period)
+	res, err := ta.SMA(data, period)
 	if err != nil {
 		if err.Error() != "Invalid period" {
 			t.Errorf("Unexpected error %s", err.Error())
@@ -66,7 +60,7 @@ func TestEmaPeriod(t *testing.T) {
 	}
 	var period int = 1
 
-	res, err := EMA(data, period)
+	res, err := ta.EMA(data, period)
 	if err != nil {
 		if err.Error() != "Invalid period" {
 			t.Errorf("Unexpected error %s", err.Error())
@@ -76,18 +70,6 @@ func TestEmaPeriod(t *testing.T) {
 	}
 }
 
-func test_ma(t *testing.T, tests []*testItem, f ma_func, round_floats float64) {
-	for _, test := range tests {
-
-		res, err := f(test.Input, test.Period)
-
-		if err != nil {
-			t.Errorf("Unexpected error %s", err.Error())
-		} else {
-			compare_inp_exp(t, res, test.Expected, round_floats)
-		}
-	}
-}
 func TestSMACalculation(t *testing.T) {
 
 	tests := []*testItem{
@@ -148,7 +130,7 @@ func TestSMACalculation(t *testing.T) {
 			Period: 6,
 		},
 	}
-	test_ma(t, tests, SMA, 8)
+	test_worker(t, tests, ta.SMA, 8)
 }
 
 func TestEMACalculation(t *testing.T) {
@@ -188,29 +170,10 @@ func TestEMACalculation(t *testing.T) {
 			Period: 2,
 		},
 	}
-	test_ma(t, tests, EMA, 2)
+	test_worker(t, tests, ta.EMA, 2)
 }
 
-func compare_inp_exp(t *testing.T, res, expected []float64, round_floats float64) {
-	for k, v := range res {
-		rounded_v := math.Round(v*(math.Pow(10.0, round_floats))) / math.Pow(10.0, round_floats)
-		rounded_e := math.Round(expected[k]*(math.Pow(10.0, round_floats))) / math.Pow(10.0, round_floats)
-
-		if ((rounded_v != rounded_e) && !math.IsNaN(v) && !math.IsNaN(expected[k])) ||
-			(math.IsNaN(rounded_e) && !math.IsNaN(rounded_v)) ||
-			(math.IsNaN(rounded_v) && !math.IsNaN(rounded_e)) {
-			t.Errorf(`
-							Expected result %#v
-							Got result		%#v
-							%0.8f instead of %0.8f
-							(%0.8f instead of %0.8f)
-						`, expected, res, rounded_v, rounded_e, v, expected[k])
-			break
-		}
-	}
-}
-
-func Test_MACD(t *testing.T) {
+func test_workerCD(t *testing.T) {
 
 	type MACDTestItem struct {
 		Input        []float64
@@ -312,7 +275,7 @@ func Test_MACD(t *testing.T) {
 	}
 
 	for _, test := range MACDTests {
-		macd, macdsignal, macdhist, err := MACD(test.Input, test.FastPeriod,
+		macd, macdsignal, macdhist, err := ta.MACD(test.Input, test.FastPeriod,
 			test.SlowPeriod, test.SignalPeriod)
 
 		if err != nil {

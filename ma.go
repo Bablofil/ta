@@ -29,8 +29,7 @@ func SMA(data []float64, period int) (result []float64, err error) {
 	return result, nil
 }
 
-func EMA(data []float64, period int) (result []float64, err error) {
-
+func generalEMA(data []float64, period int, multiplier float64) (result []float64, err error) {
 	if period <= 1 {
 		return result, errors.New("Invalid period")
 	}
@@ -39,8 +38,6 @@ func EMA(data []float64, period int) (result []float64, err error) {
 	if err != nil {
 		return
 	}
-
-	var multiplier float64 = 2 / (float64(period) + 1)
 
 	for k, v := range sma {
 		if math.IsNaN(v) {
@@ -56,6 +53,21 @@ func EMA(data []float64, period int) (result []float64, err error) {
 		}
 	}
 	return result, nil
+}
+
+func EMA(data []float64, period int) (result []float64, err error) {
+	return generalEMA(data, period, 2/(float64(period)+1))
+}
+
+/* SMMA, MMA and RMA are synonyms (https://en.wikipedia.org/wiki/Moving_average) */
+func SMMA(data []float64, period int) (result []float64, err error) {
+	return generalEMA(data, period, 1/float64(period))
+}
+func MMA(data []float64, period int) (result []float64, err error) {
+	return generalEMA(data, period, 1/float64(period))
+}
+func RMA(data []float64, period int) (result []float64, err error) {
+	return generalEMA(data, period, 1/float64(period))
 }
 
 func MACD(data []float64, fastperiod, slowperiod, signalperiod int) (macd, macdsignal, macdhist []float64, err error) {
