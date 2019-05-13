@@ -28,9 +28,9 @@ func main() {
 	// run SMA with period 1
 	fmt.Println(ta.SMA(closes, 1))
 
-	// run EMA with period 10
+	// run EMA with period 10 (the same is for SMMA, MMA, RMA)
 	fmt.Println(ta.EMA(closes, 10))
-
+	
 	// MACD fast=12, slow=26, smoothing=9
 	macd, macdsignal, macdhist, err := ta.MACD(closes, 12, 26, 9)
 	if err != nil {
@@ -39,6 +39,9 @@ func main() {
 	fmt.Println("macd", macd)
 	fmt.Println("macdsignal", macdsignal)
 	fmt.Println("macdhist", macdhist)
+	
+	// RSI period 9
+	fmt.Println(RSI(closes, 9))
 }
 ```
 
