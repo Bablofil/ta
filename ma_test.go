@@ -60,6 +60,22 @@ func TestNegativePeriod(t *testing.T) {
 	}
 }
 
+func TestEmaPeriod(t *testing.T) {
+	var data []float64 = []float64{
+		1.0, 2.0, 3.0,
+	}
+	var period int = 1
+
+	res, err := EMA(data, period)
+	if err != nil {
+		if err.Error() != "Invalid period" {
+			t.Errorf("Unexpected error %s", err.Error())
+		}
+	} else {
+		t.Errorf("Must be error, got %#v as res instead", res)
+	}
+}
+
 func test_ma(t *testing.T, tests []*testItem, f ma_func, round_floats float64) {
 	for _, test := range tests {
 

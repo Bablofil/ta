@@ -31,6 +31,10 @@ func SMA(data []float64, period int) (result []float64, err error) {
 
 func EMA(data []float64, period int) (result []float64, err error) {
 
+	if period <= 1 {
+		return result, errors.New("Invalid period")
+	}
+
 	sma, err := SMA(data, period)
 	if err != nil {
 		return
