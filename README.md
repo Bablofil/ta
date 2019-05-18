@@ -60,3 +60,17 @@ func main() {
 	fmt.Println("slowd", slowd)
 }
 ```
+## Benchmarks
+
+```
+goos: windows
+goarch: amd64
+BenchmarkSMA-4           1000000              1122 ns/op
+BenchmarkEMA-4            500000              2260 ns/op
+BenchmarkMACD-4           200000              7605 ns/op
+BenchmarkRSI-4            200000              6170 ns/op
+BenchmarkSTOCH-4          200000             10305 ns/op
+BenchmarkSTOCHRSI-4       100000             21041 ns/op
+PASS
+ok      _/D_/golang/ta/tests    9.738s
+```

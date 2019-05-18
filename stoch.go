@@ -1,7 +1,6 @@
 package ta
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -38,7 +37,6 @@ func STOCHRSI(data []float64, period, fastk_period, fastd_period int) (fastk, sl
 	if err != nil {
 		return
 	}
-	fmt.Println(rsi)
 
 	return STOCH(rsi, rsi, rsi, period, fastk_period, fastd_period)
 }
