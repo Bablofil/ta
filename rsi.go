@@ -38,3 +38,5 @@ func RSI(data []float64, period int) (result []float64, err error) {
 	}
 	return
 }
+
+
