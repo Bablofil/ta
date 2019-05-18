@@ -2,6 +2,7 @@ package tests
 
 import (
 	"math"
+	"strings"
 	"testing"
 
 	"../../ta"
@@ -13,7 +14,7 @@ func TestEmptyData(t *testing.T) {
 
 	res, err := ta.SMA(data, period)
 	if err != nil {
-		if err.Error() != "input parameter 'data' is empty" {
+		if !strings.Contains(err.Error(), "'data' is empty") {
 			t.Errorf("Unexpected error %s", err.Error())
 		}
 	} else {
@@ -30,7 +31,7 @@ func TestZeroPeriod(t *testing.T) {
 
 	res, err := ta.SMA(data, period)
 	if err != nil {
-		if err.Error() != "Invalid period" {
+		if !strings.Contains(err.Error(), "Invalid period") {
 			t.Errorf("Unexpected error %s", err.Error())
 		}
 	} else {
@@ -46,7 +47,7 @@ func TestNegativePeriod(t *testing.T) {
 
 	res, err := ta.SMA(data, period)
 	if err != nil {
-		if err.Error() != "Invalid period" {
+		if !strings.Contains(err.Error(), "Invalid period") {
 			t.Errorf("Unexpected error %s", err.Error())
 		}
 	} else {
@@ -62,7 +63,7 @@ func TestEmaPeriod(t *testing.T) {
 
 	res, err := ta.EMA(data, period)
 	if err != nil {
-		if err.Error() != "Invalid period" {
+		if !strings.Contains(err.Error(), "Invalid period") {
 			t.Errorf("Unexpected error %s", err.Error())
 		}
 	} else {
@@ -173,7 +174,7 @@ func TestEMACalculation(t *testing.T) {
 	test_worker(t, tests, ta.EMA, 2)
 }
 
-func test_workerCD(t *testing.T) {
+func TestMACD(t *testing.T) {
 
 	type MACDTestItem struct {
 		Input        []float64
@@ -228,48 +229,28 @@ func test_workerCD(t *testing.T) {
 				-0.21748933, -0.04349606, 0.17309122, 0.42058164, 0.68946351,
 			},
 			ExpectedMACDSignal: []float64{
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), 0.16148066, 0.08007288,
-				0.03721329, 0.03663134, 0.07844962, 0.16042697, 0.27886664,
-				0.26972604, 0.19643942, 0.10229581, 0.01573588, -0.0456146,
-				-0.07188979, -0.05868482, -0.00533851, 0.0863377, 0.21299016,
-				0.21085054, 0.14357255, 0.05462109, -0.02742197, -0.08481723,
-				-0.10760724, -0.09131299, -0.03521311, 0.05892999, 0.18780281,
-				0.18767003, 0.12221268, 0.03491841, -0.04561188, -0.10162274,
-				-0.12314307, -0.10568219, -0.04850869, 0.04662376, 0.1764093,
-				0.17711933, 0.11244085, 0.02586679, -0.05399716, -0.10939127,
-				-0.13034056, -0.11235082, -0.05468742, 0.04089892, 0.17110502,
-				0.17220477, 0.10788744, 0.02164809, -0.05790567, -0.11301231,
-				-0.13369517, -0.11545853, -0.05756632, 0.03823205, 0.16863464,
-				0.16991646, 0.10576784, 0.01968481, -0.05972412, -0.11469657,
-				-0.13525512, -0.11690331, -0.0589044, 0.0369928, 0.16748694,
+				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
+				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
+				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), -0.00716444, 0.01465165, 0.07390009, 0.16929050, 0.29790203,
+				0.29632517, 0.22851044, 0.13816764, 0.05408012, -0.00584755, -0.03152305, -0.01835773, 0.03445836, 0.12523397, 0.25071224,
+				0.24720252, 0.17842060, 0.08788076, 0.00420383, -0.05484023, -0.07927030, -0.06458923, -0.01006204, 0.08255888, 0.20996711,
+				0.20843210, 0.14163779, 0.05307328, -0.02866021, -0.08580783, -0.10839972, -0.09194697, -0.03572029, 0.05852424, 0.18747821,
+				0.18741035, 0.12200494, 0.03475222, -0.04574484, -0.10172910, -0.12322816, -0.10575027, -0.04856315, 0.04658020, 0.17637445,
+				0.17709145, 0.11241854, 0.02584895, -0.05401144, -0.10940269, -0.13034970, -0.11235813, -0.05469327, 0.04089424, 0.17110127,
+				0.17220177, 0.10788504, 0.02164617, -0.05790721, -0.11301353, -0.13369616, -0.11545932, -0.05756695, 0.03823155, 0.16863424,
+				0.16991614, 0.10576758, 0.01968460, -0.05972429, -0.11469670, -0.13525523, -0.11690339, -0.05890447, 0.03699275, 0.16748690,
 			},
 			ExpectedHist: []float64{
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
-				math.NaN(), math.NaN(), math.NaN(), -0.44375062, -0.32563113,
-				-0.17143834, -0.00232781, 0.16727312, 0.32790942, 0.47375867,
-				-0.03656241, -0.29314649, -0.37657443, -0.34623974, -0.24540189,
-				-0.10510078, 0.05281987, 0.21338525, 0.36670484, 0.50660986,
-				-0.00855848, -0.26911198, -0.35580584, -0.32817224, -0.22958104,
-				-0.09116004, 0.06517701, 0.22439951, 0.37657239, 0.51549127,
-				-0.00053111, -0.26182939, -0.34917708, -0.32212117, -0.22404342,
-				-0.08608132, 0.06984351, 0.22869401, 0.38052981, 0.51914216,
-				0.00284013, -0.25871396, -0.34629622, -0.31945582, -0.22157643,
-				-0.08379716, 0.07195896, 0.23065361, 0.38234534, 0.5208244,
-				0.00439901, -0.25726932, -0.3449574, -0.31821505, -0.22042653,
-				-0.08273148, 0.07294657, 0.23156885, 0.38319349, 0.52161035,
-				0.00512729, -0.25659449, -0.34433213, -0.31763573, -0.21988979,
-				-0.08223421, 0.07340725, 0.23199562, 0.38358883, 0.52197657,
+				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
+				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(),
+				math.NaN(), math.NaN(), math.NaN(), math.NaN(), math.NaN(), -0.05731555, 0.08726436, 0.23699379, 0.38156163, 0.51444613,
+				-0.00630745, -0.27125893, -0.36137117, -0.33635008, -0.23971070, -0.10270200, 0.05266126, 0.21126438, 0.36310243, 0.50191308,
+				-0.01403888, -0.27512767, -0.36215937, -0.33470770, -0.23617625, -0.09772027, 0.05872427, 0.21810877, 0.37048366, 0.50963291,
+				-0.00614003, -0.26717723, -0.35425803, -0.32693400, -0.22859045, -0.09036757, 0.06581099, 0.22490670, 0.37697814, 0.51581587,
+				-0.00027143, -0.26162165, -0.34901089, -0.32198821, -0.22393706, -0.08599623, 0.06991158, 0.22874846, 0.38057338, 0.51917701,
+				0.00286802, -0.25869165, -0.34627837, -0.31944154, -0.22156501, -0.08378802, 0.07196627, 0.23065946, 0.38235002, 0.52082814,
+				0.00440200, -0.25726692, -0.34495548, -0.31821352, -0.22042530, -0.08273049, 0.07294736, 0.23156948, 0.38319399, 0.52161075,
+				0.00512761, -0.25659424, -0.34433193, -0.31763556, -0.21988966, -0.08223411, 0.07340733, 0.23199569, 0.38358889, 0.52197661,
 			},
 		},
 	}
@@ -281,8 +262,8 @@ func test_workerCD(t *testing.T) {
 		if err != nil {
 			t.Errorf(err.Error())
 		}
-		compare_inp_exp(t, macd, test.ExpectedMACD, 8)
-		compare_inp_exp(t, macdsignal, test.ExpectedMACDSignal, 8)
-		compare_inp_exp(t, macdhist, test.ExpectedHist, 8)
+		compare_inp_exp(t, macd, test.ExpectedMACD, 8, "MACD")
+		compare_inp_exp(t, macdsignal, test.ExpectedMACDSignal, 8, "MACDSignal")
+		compare_inp_exp(t, macdhist, test.ExpectedHist, 8, "MACDHIST")
 	}
 }
