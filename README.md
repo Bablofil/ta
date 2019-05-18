@@ -42,6 +42,21 @@ func main() {
 	
 	// RSI period 9
 	fmt.Println(RSI(closes, 9))
+	
+	// STOCH (high, low, close, fastk_period=5, slowk_period=3, slowd_period=3
+	slowk, slowd, err := ta.STOCH(high, low, closes, 5, 3, 3)
+	if err != nil {
+		fmt.Errorf(err.Error())
+	}
+	fmt.Println("slowk", slowk)
+	fmt.Println("slowd", slowd)
+	
+	// STOCHRSI (close, period, fastk_period, fastd_period )
+	slowk, slowd, err := ta.STOCHRSI(close, 14, 3, 3)
+	if err != nil {
+		fmt.Errorf(err.Error())
+	}
+	fmt.Println("slowk", slowk)
+	fmt.Println("slowd", slowd)
 }
 ```
-
