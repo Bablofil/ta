@@ -5,6 +5,10 @@ import (
 	"math"
 )
 
+type ma_func func([]float64, int) ([]float64, error)
+
+// Simple moving average
+// https://en.wikipedia.org/wiki/Moving_average
 // Data expected to be older->newer, fair for result as well
 func SMA(data []float64, period int) (result []float64, err error) {
 	if len(data) == 0 {
@@ -16,14 +20,16 @@ func SMA(data []float64, period int) (result []float64, err error) {
 	}
 
 	var interm float64
+	var nan_inp int = 0
 
 	for i := 0; i < len(data); i++ {
 		if math.IsNaN(data[i]) {
 			result = append(result, math.NaN())
 			interm = 0
+			nan_inp++
 		} else {
 			interm += data[i]
-			if (i + 1) < period {
+			if (i + 1 - nan_inp) < period {
 				result = append(result, math.NaN())
 			} else {
 				result = append(result, interm/float64(period))
@@ -36,6 +42,7 @@ func SMA(data []float64, period int) (result []float64, err error) {
 	return result, nil
 }
 
+// Calculates various EMA with different smoothing multipliers, see lower
 func generalEMA(data []float64, period int, multiplier float64) (result []float64, err error) {
 	if period <= 1 {
 		return result, errors.New("Invalid period")
@@ -62,11 +69,20 @@ func generalEMA(data []float64, period int, multiplier float64) (result []float6
 	return result, nil
 }
 
+// Exponential moving average
+// https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
 func EMA(data []float64, period int) (result []float64, err error) {
 	return generalEMA(data, period, 2/(float64(period)+1))
 }
 
-/* SMMA, MMA and RMA are synonyms (https://en.wikipedia.org/wiki/Moving_average) */
+// Synonym to EMA
+func EWMA(data []float64, period int) (result []float64, err error) {
+	return EMA(data, period)
+}
+
+// Modified moving average
+// https://en.wikipedia.org/wiki/Moving_average
+// SMMA, MMA and RMA are synonyms according to wiki
 func SMMA(data []float64, period int) (result []float64, err error) {
 	return generalEMA(data, period, 1/float64(period))
 }
@@ -75,6 +91,59 @@ func MMA(data []float64, period int) (result []float64, err error) {
 }
 func RMA(data []float64, period int) (result []float64, err error) {
 	return generalEMA(data, period, 1/float64(period))
+}
+
+// Double exponential moving average
+// https://en.wikipedia.org/wiki/Double_exponential_moving_average
+func D2(data []float64, period int) (result []float64, err error) {
+	ema, err := EMA(data, period)
+	if err != nil {
+		return
+	}
+	ema_ema, err := EMA(ema, period)
+	if err != nil {
+		return
+	}
+	for k, v := range ema {
+		result = append(result, v*2-ema_ema[k])
+	}
+	return
+}
+
+// Synonym for double exponential moving average
+func DEMA(data []float64, period int) (result []float64, err error) {
+	return D2(data, period)
+}
+
+// Triple Exponential Moving Average
+// https://en.wikipedia.org/wiki/Triple_exponential_moving_average
+func T3(data []float64, period int) (result []float64, err error) {
+	e1, err := EMA(data, period)
+	if err != nil {
+		return
+	}
+	e2, err := EMA(e1, period)
+	if err != nil {
+		return
+	}
+	e3, err := EMA(e2, period)
+	if err != nil {
+		return
+	}
+	for k, _ := range e1 {
+		result = append(result, e1[k]*3-e2[k]*3+e3[k])
+	}
+	return
+}
+
+// Synonym for Triple Exponential Moving Average
+func TEMA(data []float64, period int) (result []float64, err error) {
+	return T3(data, period)
+}
+
+// Synonym for Triple Exponential Moving Average
+func TMA(data []float64, period int) (result []float64, err error) {
+	return T3(data, period)
 }
 
 func MACD(data []float64, fastperiod, slowperiod, signalperiod int) (macd, macdsignal, macdhist []float64, err error) {
@@ -89,29 +158,18 @@ func MACD(data []float64, fastperiod, slowperiod, signalperiod int) (macd, macds
 	}
 
 	macd = make([]float64, len(fast_ema))
-	//macdsignal = make([]float64, 0)
 	macdsignal = make([]float64, len(fast_ema))
-	//diff := make([]float64, 0)
 
 	for k, fast := range fast_ema {
 		if math.IsNaN(fast) || math.IsNaN(slow_ema[k]) {
 			macd[k] = math.NaN()
-			//macdsignal = append(macdsignal, math.NaN())
 			macdsignal[k] = math.NaN()
 		} else {
 			macd[k] = fast - slow_ema[k]
-			//diff = append(diff, macd[k])
 			macdsignal[k] = macd[k]
 		}
 	}
 
-	/*diff_ema, err := EMA(diff, signalperiod)
-
-	if err != nil {
-		return
-	}
-	macdsignal = append(macdsignal, diff_ema...)
-	*/
 	macdsignal, err = EMA(macdsignal, signalperiod)
 	if err != nil {
 		return

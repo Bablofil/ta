@@ -39,3 +39,10 @@ func SliceMin(slice []float64) (local_min float64) {
 	}
 	return
 }
+
+func SliceSum(slice []float64) (sum float64) {
+	for _, v := range slice {
+		sum += v
+	}
+	return
+}
